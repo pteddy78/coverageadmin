@@ -332,3 +332,4 @@ Error: ENOENT: no such file or directory, lstat '/vercel/path0/.next/server/app/
 - ✅ Search functionality across all exception fields
 - ✅ Visual indicators and status badges
 - ✅ Proper loading states and error handling
+- ✅ Consistent ID pill design across all views (Exception ID, Client ID, Booking ID)

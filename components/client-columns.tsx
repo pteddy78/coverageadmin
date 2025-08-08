@@ -18,6 +18,21 @@ function initials(name: string) {
 export function clientColumns(onViewBookings?: (client: Client) => void): ColumnDef<Client>[] {
   return [
     {
+      accessorKey: "clientid",
+      header: "Client ID",
+      cell: ({ row }) => {
+        const c = row.original
+        return (
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="font-mono text-xs">
+              #{c.clientid}
+            </Badge>
+          </div>
+        )
+      },
+      enableSorting: true,
+    },
+    {
       accessorKey: "companyname",
       header: "Client",
       cell: ({ row }) => {
@@ -29,7 +44,6 @@ export function clientColumns(onViewBookings?: (client: Client) => void): Column
             </Avatar>
             <div>
               <div className="font-medium">{c.companyname}</div>
-              <div className="text-xs text-muted-foreground">ID: {c.clientid}</div>
             </div>
           </div>
         )

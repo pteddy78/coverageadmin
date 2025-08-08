@@ -3,23 +3,21 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CalendarClock, MapPin, Ticket } from 'lucide-react'
+import { CalendarClock, MapPin } from 'lucide-react'
 import type { BookingWithRelations } from "@/types/api"
 
 export function bookingColumns(onViewDetails?: (booking: BookingWithRelations) => void): ColumnDef<BookingWithRelations>[] {
   return [
     {
-      id: "coverage",
-      header: "Coverage",
+      id: "bookingid",
+      header: "Booking ID",
       cell: ({ row }) => {
         const b = row.original
         return (
-          <div className="flex flex-col">
-            <span className="font-medium">Booking #{b.bookingid}</span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Ticket className="h-3.5 w-3.5" />
-              {b.CoverageConfig?.coverage_name ?? '—'}
-            </span>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="font-mono text-xs">
+              #{b.bookingid}
+            </Badge>
           </div>
         )
       },
@@ -33,7 +31,11 @@ export function bookingColumns(onViewDetails?: (booking: BookingWithRelations) =
         return (
           <div className="flex flex-col">
             <span className="font-medium">{b.Client?.companyname ?? "—"}</span>
-            <span className="text-xs text-muted-foreground">Client #{b.clientid}</span>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="font-mono text-xs">
+                #{b.clientid}
+              </Badge>
+            </div>
           </div>
         )
       },
