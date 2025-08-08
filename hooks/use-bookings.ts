@@ -19,7 +19,13 @@ export function useBooking(bookingId: number) {
 export function useBookingsByClient(clientId: number) {
   return useQuery({
     queryKey: ['bookings', 'client', clientId],
-    queryFn: () => getBookingsByClientId(clientId),
+    queryFn: async () => {
+      const response = await fetch(`/api/bookings?clientId=${clientId}`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch bookings for client ${clientId}`)
+      }
+      return response.json()
+    },
     enabled: !!clientId,
   })
 }

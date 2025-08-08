@@ -27,6 +27,9 @@ export type BookingWithRelations = Booking & {
   BookingStatus: Pick<BookingStatus, 'bookingstatus_shortdesc'>
   CoverageConfig: Pick<CoverageConfig, 'coverage_name'>
   BookingDays?: BookingDays[]
+  BookingExceptionLog?: (BookingException & {
+    BookingExceptionStatus: Pick<Tables['BookingExceptionStatus']['Row'], 'bookingexceptionstatusid' | 'exception_shortdesc' | 'exception_longdesc'>
+  })[]
 }
 
 export type ExceptionWithRelations = BookingException & {

@@ -149,6 +149,18 @@ export async function getBookingsByClientId(clientId: number): Promise<BookingWi
         start_time,
         end_time,
         created_at
+      ),
+      BookingExceptionLog (
+        exceptionlogid,
+        bookingid,
+        bookingexceptionstatusid,
+        resolved,
+        created_at,
+        BookingExceptionStatus (
+          bookingexceptionstatusid,
+          exception_shortdesc,
+          exception_longdesc
+        )
       )
     `)
     .eq('clientid', clientId)
