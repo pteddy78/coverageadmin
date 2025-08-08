@@ -145,7 +145,7 @@ export async function getBookingsByClientId(clientId: number): Promise<BookingWi
         coverage_name
       ),
       BookingDays (
-        bookingdaysid,
+        bookingdayid,
         bookingid,
         coverage_day,
         start_time,
