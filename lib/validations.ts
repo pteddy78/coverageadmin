@@ -41,30 +41,10 @@ export const createClientSchema = clientSchema
 
 export const updateClientSchema = clientSchema.partial()
 
-export const createBookingSchema = bookingSchema.omit({
-  bookingid: true,
-  created_at: true,
-  created_by: true,
-  edited_at: true,
-  edited_by: true
-})
+export const createBookingSchema = bookingSchema
 
-export const updateBookingSchema = bookingSchema.partial().omit({
-  bookingid: true,
-  created_at: true,
-  created_by: true,
-  edited_at: true,
-  edited_by: true
-})
+export const updateBookingSchema = bookingSchema.partial()
 
-export const createExceptionSchema = exceptionSchema.omit({
-  exceptionlogid: true,
-  created_at: true,
-  created_by: true
-})
+export const createExceptionSchema = exceptionSchema
 
-export const updateExceptionSchema = exceptionSchema.partial().omit({
-  exceptionlogid: true,
-  created_at: true,
-  created_by: true
-})
+export const updateExceptionSchema = exceptionSchema.partial()

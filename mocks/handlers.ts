@@ -1,4 +1,4 @@
-import { rest } from 'msw'
+import { http } from 'msw'
 import type { Database } from '@/types/supabase'
 
 type Tables = Database['public']['Tables']
@@ -53,72 +53,93 @@ const mockExceptions: BookingException[] = [
 
 export const handlers = [
   // Clients endpoints
-  rest.get('/api/clients', (req, res, ctx) => {
-    const id = req.url.searchParams.get('id')
+  http.get('/api/clients', ({ request }) => {
+    const url = new URL(request.url)
+    const id = url.searchParams.get('id')
     if (id) {
       const client = mockClients.find(c => c.clientid === Number(id))
       if (!client) {
-        return res(ctx.status(404), ctx.json({ error: 'Client not found' }))
+        return Response.json({ error: 'Client not found' }, { status: 404 })
       }
-      return res(ctx.json(client))
+      return Response.json(client)
     }
-    return res(ctx.json(mockClients))
+    return Response.json(mockClients)
   }),
 
-  rest.post('/api/clients', async (req, res, ctx) => {
-    const body = await req.json()
+  http.post('/api/clients', async ({ request }) => {
+    const body = await request.json() as Partial<Client>
     const newClient: Client = {
+      companyname: null,
+      unitcount2024: null,
+      price2024: null,
+      rate2024: null,
+      increaseperc: null,
+      hasbooking: null,
       ...body,
       clientid: mockClients.length + 1,
       created_at: new Date().toISOString()
     }
     mockClients.push(newClient)
-    return res(ctx.json(newClient))
+    return Response.json(newClient)
   }),
 
   // Bookings endpoints
-  rest.get('/api/bookings', (req, res, ctx) => {
-    const id = req.url.searchParams.get('id')
-    const clientId = req.url.searchParams.get('clientId')
+  http.get('/api/bookings', ({ request }) => {
+    const url = new URL(request.url)
+    const id = url.searchParams.get('id')
+    const clientId = url.searchParams.get('clientId')
 
     if (id) {
       const booking = mockBookings.find(b => b.bookingid === Number(id))
       if (!booking) {
-        return res(ctx.status(404), ctx.json({ error: 'Booking not found' }))
+        return Response.json({ error: 'Booking not found' }, { status: 404 })
       }
-      return res(ctx.json(booking))
+      return Response.json(booking)
     }
 
     if (clientId) {
       const bookings = mockBookings.filter(b => b.clientid === Number(clientId))
-      return res(ctx.json(bookings))
+      return Response.json(bookings)
     }
 
-    return res(ctx.json(mockBookings))
+    return Response.json(mockBookings)
   }),
 
-  rest.post('/api/bookings', async (req, res, ctx) => {
-    const body = await req.json()
+  http.post('/api/bookings', async ({ request }) => {
+    const body = await request.json() as Partial<Booking>
     const newBooking: Booking = {
+      clientid: 0,
+      cover_startdate: null,
+      cover_enddate: null,
+      unitcount2025: null,
+      primary_contact: null,
+      primary_email: null,
+      booking_notes: '',
+      full_request: null,
+      bookingstatusid: null,
+      coverageid: null,
+      edited_at: null,
+      edited_by: null,
       ...body,
       bookingid: mockBookings.length + 1,
       created_at: new Date().toISOString(),
       created_by: 'test-user'
     }
     mockBookings.push(newBooking)
-    return res(ctx.json(newBooking))
+    return Response.json(newBooking)
   }),
 
-  rest.put('/api/bookings', async (req, res, ctx) => {
-    const id = req.url.searchParams.get('id')
+  http.put('/api/bookings', async ({ request }) => {
+    const url = new URL(request.url)
+    const id = url.searchParams.get('id')
     if (!id) {
-      return res(ctx.status(400), ctx.json({ error: 'Booking ID is required' }))
+      return Response.json({ error: 'Booking ID is required' }, { status: 400 })
     }
 
-    const body = await req.json()
+    const body = await request.json() as Partial<Booking>
     const index = mockBookings.findIndex(b => b.bookingid === Number(id))
     if (index === -1) {
-      return res(ctx.status(404), ctx.json({ error: 'Booking not found' }))
+      return Response.json({ error: 'Booking not found' }, { status: 404 })
     }
 
     mockBookings[index] = {
@@ -127,47 +148,52 @@ export const handlers = [
       edited_at: new Date().toISOString(),
       edited_by: 'test-user'
     }
-    return res(ctx.json(mockBookings[index]))
+    return Response.json(mockBookings[index])
   }),
 
   // Exceptions endpoints
-  rest.get('/api/exceptions', (req, res, ctx) => {
-    const resolved = req.url.searchParams.get('resolved')
+  http.get('/api/exceptions', ({ request }) => {
+    const url = new URL(request.url)
+    const resolved = url.searchParams.get('resolved')
     if (resolved !== null) {
       const isResolved = resolved === 'true'
-      return res(ctx.json(mockExceptions.filter(e => e.resolved === isResolved)))
+      return Response.json(mockExceptions.filter(e => e.resolved === isResolved))
     }
-    return res(ctx.json(mockExceptions))
+    return Response.json(mockExceptions)
   }),
 
-  rest.post('/api/exceptions', async (req, res, ctx) => {
-    const body = await req.json()
+  http.post('/api/exceptions', async ({ request }) => {
+    const body = await request.json() as Partial<BookingException>
     const newException: BookingException = {
+      bookingid: 0,
+      bookingexceptionstatusid: 0,
+      resolved: null,
       ...body,
       exceptionlogid: mockExceptions.length + 1,
       created_at: new Date().toISOString(),
       created_by: 'test-user'
     }
     mockExceptions.push(newException)
-    return res(ctx.json(newException))
+    return Response.json(newException)
   }),
 
-  rest.put('/api/exceptions', async (req, res, ctx) => {
-    const id = req.url.searchParams.get('id')
+  http.put('/api/exceptions', async ({ request }) => {
+    const url = new URL(request.url)
+    const id = url.searchParams.get('id')
     if (!id) {
-      return res(ctx.status(400), ctx.json({ error: 'Exception ID is required' }))
+      return Response.json({ error: 'Exception ID is required' }, { status: 400 })
     }
 
-    const body = await req.json()
+    const body = await request.json() as Partial<BookingException>
     const index = mockExceptions.findIndex(e => e.exceptionlogid === Number(id))
     if (index === -1) {
-      return res(ctx.status(404), ctx.json({ error: 'Exception not found' }))
+      return Response.json({ error: 'Exception not found' }, { status: 404 })
     }
 
     mockExceptions[index] = {
       ...mockExceptions[index],
       ...body
     }
-    return res(ctx.json(mockExceptions[index]))
+    return Response.json(mockExceptions[index])
   })
 ]

@@ -3,10 +3,10 @@
 import * as React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { CalendarClock, MapPin, Ticket, Mail, Calendar } from 'lucide-react'
+import { CalendarClock, MapPin, Ticket, Mail } from 'lucide-react'
 import { useBookingsByClient } from "@/hooks/use-bookings"
 import { Skeleton } from "@/components/ui/skeleton"
-import type { Client } from "@/types/supabase"
+import type { Client } from "@/types/api"
 import { debugAllBookings } from "@/lib/database"
 
 export function BookingDialog({

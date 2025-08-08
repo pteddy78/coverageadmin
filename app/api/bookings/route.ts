@@ -4,6 +4,15 @@ import { handleApiError, validateRequest } from '@/lib/api-utils'
 import { createBookingSchema, updateBookingSchema } from '@/lib/validations'
 import { supabase } from '@/lib/supabase'
 
+type BookingRequestData = {
+  bookingDays?: Array<{
+    coverage_day?: string | null
+    start_time?: string | null
+    end_time?: string | null
+  }>
+  [key: string]: unknown
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -38,7 +47,7 @@ export async function POST(request: Request) {
     const data = await validateRequest(request, createBookingSchema)
     
     // Start a transaction to insert booking and booking days
-    const { bookingDays, ...bookingData } = data
+    const { bookingDays, ...bookingData } = data as BookingRequestData
     
     // Insert booking
     const { data: booking, error: bookingError } = await supabase
@@ -50,7 +59,7 @@ export async function POST(request: Request) {
     if (bookingError) throw bookingError
     
     // Insert booking days if provided
-    if (bookingDays?.length) {
+    if (bookingDays && Array.isArray(bookingDays) && bookingDays.length > 0) {
       const daysWithBookingId = bookingDays.map(day => ({
         ...day,
         bookingid: booking.bookingid
@@ -82,7 +91,7 @@ export async function PUT(request: Request) {
     }
 
     const data = await validateRequest(request, updateBookingSchema)
-    const { bookingDays, ...bookingData } = data
+    const { bookingDays, ...bookingData } = data as BookingRequestData
 
     // Update booking
     const { data: booking, error: bookingError } = await supabase
@@ -95,7 +104,7 @@ export async function PUT(request: Request) {
     if (bookingError) throw bookingError
 
     // Update booking days if provided
-    if (bookingDays?.length) {
+    if (bookingDays && Array.isArray(bookingDays) && bookingDays.length > 0) {
       // Delete existing booking days
       const { error: deleteError } = await supabase
         .from('BookingDays')

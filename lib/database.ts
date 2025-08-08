@@ -6,11 +6,9 @@ import type {
 } from '@/types/api'
 
 type Tables = Database['public']['Tables']
-type Client = Tables['Client']['Row']
 type Booking = Tables['Booking']['Row']
 type BookingDays = Tables['BookingDays']['Row']
 type BookingException = Tables['BookingExceptionLog']['Row']
-type BookingStatus = Tables['BookingStatus']['Row']
 
 // Client queries
 export async function getClients() {
@@ -495,7 +493,7 @@ export async function testTableAccess() {
     console.log('=== Testing table access and permissions ===')
     
     // Test 1: Try to get table info
-    const { data: tableInfo, error: tableError } = await supabase
+    const { error: tableError } = await supabase
       .from('BookingExceptionLog')
       .select('exceptionlogid')
       .limit(1)

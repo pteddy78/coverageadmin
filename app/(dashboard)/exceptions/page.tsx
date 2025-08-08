@@ -1,12 +1,12 @@
 "use client"
 
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+
 import { AlertTriangle, AlertCircle } from 'lucide-react'
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useExceptions } from "@/hooks/use-exceptions"
 import { Skeleton } from "@/components/ui/skeleton"
 

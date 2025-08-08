@@ -15,7 +15,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // Basic rate limiting
-  const ip = request.ip ?? 'anonymous'
+  const ip = request.headers.get('x-forwarded-for') ?? 
+             request.headers.get('x-real-ip') ?? 
+             'anonymous'
   const now = Date.now()
   const rateLimitInfo = rateLimit.get(ip) ?? { count: 0, timestamp: now }
 

@@ -4,7 +4,7 @@ import * as React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { CalendarClock, MapPin, Ticket, Mail, Calendar, Clock } from 'lucide-react'
-import { Skeleton } from "@/components/ui/skeleton"
+
 import type { BookingWithRelations } from "@/types/api"
 
 export function BookingDetailsDialog({

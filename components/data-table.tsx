@@ -8,6 +8,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type SortingState,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -37,7 +38,7 @@ export function DataTable<TData, TValue>({
   initialPageSize = 10,
   className,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState([])
+  const [sorting, setSorting] = React.useState<SortingState>([])
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: initialPageSize,
@@ -47,11 +48,11 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     state: {
-      sorting: sorting as any,
+      sorting,
       pagination,
     },
-    onSortingChange: setSorting as any,
-    onPaginationChange: setPagination as any,
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),

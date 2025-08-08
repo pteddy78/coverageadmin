@@ -11,6 +11,7 @@ import { BookingDialog } from "@/components/booking-dialog"
 import { useClients } from "@/hooks/use-clients"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
+import type { ClientWithBookings } from "@/types/api"
 
 type StatusFilter = "all" | "active" | "inactive"
 type PeriodFilter = "all" | "christmas" | "newyear"
@@ -19,7 +20,7 @@ export default function ClientsPage() {
   const [query, setQuery] = React.useState("")
   const [status, setStatus] = React.useState<StatusFilter>("all")
   const [period, setPeriod] = React.useState<PeriodFilter>("all")
-  const [dialogClient, setDialogClient] = React.useState<any>(null)
+  const [dialogClient, setDialogClient] = React.useState<ClientWithBookings | null>(null)
 
   const { data: clients, isLoading, error } = useClients()
 

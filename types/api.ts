@@ -17,6 +17,11 @@ export type BookingStatus = Tables['BookingStatus']['Row']
 export type CoverageConfig = Tables['CoverageConfig']['Row']
 
 // Extended Types with Relations
+export type ClientWithBookings = Client & {
+  Booking?: Pick<Booking, 'bookingid'>[]
+  hasbooking: boolean | null
+}
+
 export type BookingWithRelations = Booking & {
   Client: Pick<Client, 'clientid' | 'companyname'>
   BookingStatus: Pick<BookingStatus, 'bookingstatus_shortdesc'>

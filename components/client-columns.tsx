@@ -4,7 +4,7 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { Client } from "@/types/supabase"
+import type { Client } from "@/types/api"
 
 function initials(name: string) {
   return name
@@ -39,7 +39,10 @@ export function clientColumns(onViewBookings?: (client: Client) => void): Column
     {
       accessorKey: "unitcount2024",
       header: "2024 Units",
-      cell: ({ getValue }) => <span className="text-sm tabular-nums">{getValue() ?? '—'}</span>,
+      cell: ({ getValue }) => {
+        const value = getValue() as number | null
+        return <span className="text-sm tabular-nums">{value ?? '—'}</span>
+      },
       enableSorting: true,
     },
     {
