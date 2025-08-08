@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-This project is a **Next.js web application** designed for Adiuvo's team to view Booking clients have made over the Christmas and New Year's period. It provides a user-friendly app that allows admin agents to view Client Info, View Booking and Resolve conflicts.
+This project is a **Next.js web application** designed for Adiuvo's team to view Booking clients have made over the Christmas and New Year's period. It provides a user-friendly app that allows admin agents to view Client Info, View Booking and Resolve conflicts. To be updated.
 
 ## 2. Implementation Tasks
 
