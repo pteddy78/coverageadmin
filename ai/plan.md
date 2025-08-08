@@ -229,3 +229,106 @@ Error: ENOENT: no such file or directory, lstat '/vercel/path0/.next/server/app/
 - ✅ Fixed TypeScript type issues in booking dialog component
 - ✅ Resolved "Error fetching bookings: {}" console error
 - ✅ Implemented navigation functionality for "View in Exception Log" link
+
+## 5. Phase 10: Convert Exception Log to DataTable
+
+**Objective:** Convert the Exception Log page to use the same DataTable component as the Clients and Bookings pages for consistency and better user experience.
+
+**Requirements:**
+- Replace the current card-based layout with a DataTable
+- Maintain all existing functionality (search, filtering, sorting)
+- Keep the same data display but in table format
+- Ensure responsive design and proper pagination
+- Maintain exception status indicators and booking information
+
+**Implementation Plan:**
+
+#### ✅ Task 1: Create Exception Columns Component (COMPLETED)
+1. ✅ **Create `components/exception-columns.tsx`:**
+   - ✅ Define column definitions for exception data
+   - ✅ Include columns for: Exception ID, Status, Short Description, Long Description, Client, Booking Info, Created Date, Actions
+   - ✅ Implement proper cell renderers for each column type
+   - ✅ Add sorting capabilities for relevant columns
+   - ✅ Include status badges and visual indicators
+
+2. ✅ **Design Column Structure:**
+   - ✅ Exception ID column with badge styling
+   - ✅ Status column with resolved/unresolved badges
+   - ✅ Short Description column with warning icons
+   - ✅ Long Description column (truncated with expand option)
+   - ✅ Client column with company name
+   - ✅ Booking Info column with key booking details
+   - ✅ Created Date column with formatted timestamps
+   - ✅ Actions column for future functionality
+
+#### ✅ Task 2: Update Exception Page Structure (COMPLETED)
+1. ✅ **Modify `app/(dashboard)/exceptions/page.tsx`:**
+   - ✅ Replace current card-based layout with DataTable component
+   - ✅ Implement toolbar with search and filter controls
+   - ✅ Add proper loading states using DataTable patterns
+   - ✅ Maintain existing search functionality
+   - ✅ Add filter options for status (resolved/unresolved) and date ranges
+
+2. ✅ **Implement Filtering Logic:**
+   - ✅ Status filter (All, Resolved, Unresolved)
+   - ✅ Date range filter (Last 7 days, Last 30 days, All time)
+   - ✅ Search functionality across all exception fields
+   - ✅ Reset filters functionality
+
+#### ✅ Task 3: Enhance Data Display (COMPLETED)
+1. ✅ **Improve Exception Information Display:**
+   - ✅ Show exception details in expandable rows or modal
+   - ✅ Display booking information in a structured format
+   - ✅ Add visual indicators for exception severity
+   - ✅ Include timestamps and status information
+
+2. ✅ **Add Interactive Features:**
+   - ✅ Click to expand exception details
+   - ✅ Quick actions for resolving exceptions
+   - ✅ Link to related booking information
+   - ✅ Export functionality for exception data
+
+#### ✅ Task 4: Update TypeScript Types (COMPLETED)
+1. ✅ **Extend Exception Types:**
+   - ✅ Ensure `ExceptionWithRelations` type works with DataTable
+   - ✅ Add any missing type definitions for new columns
+   - ✅ Update API response types if needed
+
+#### ✅ Task 5: Implement Responsive Design (COMPLETED)
+1. ✅ **Ensure Mobile Compatibility:**
+   - ✅ Test DataTable on mobile devices
+   - ✅ Implement responsive column hiding
+   - ✅ Ensure proper touch interactions
+   - ✅ Maintain readability on small screens
+
+#### Task 6: Add Advanced Features
+1. **Implement Advanced Filtering:**
+   - Filter by exception type/category
+   - Filter by client or booking ID
+   - Date range picker for exception creation dates
+   - Bulk actions for multiple exceptions
+
+2. **Add Export and Reporting:**
+   - Export filtered exceptions to CSV
+   - Generate exception summary reports
+   - Add print functionality for exception details
+
+**Files to be Modified:**
+- `components/exception-columns.tsx` - New column definitions
+- `app/(dashboard)/exceptions/page.tsx` - Main page component
+- `types/api.ts` - TypeScript type updates (if needed)
+- `hooks/use-exceptions.ts` - Hook updates (if needed)
+
+**✅ Expected Outcome (IMPLEMENTED):**
+- ✅ Consistent DataTable interface across all pages
+- ✅ Improved performance with pagination
+- ✅ Better sorting and filtering capabilities
+- ✅ Enhanced user experience with familiar interface
+- ✅ Maintained all existing functionality
+- ✅ Responsive design that works on all devices
+- ✅ Professional table layout with proper data organization
+- ✅ Interactive exception details modal
+- ✅ Advanced filtering (status and date ranges)
+- ✅ Search functionality across all exception fields
+- ✅ Visual indicators and status badges
+- ✅ Proper loading states and error handling

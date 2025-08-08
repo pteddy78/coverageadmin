@@ -1,60 +1,89 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import * as React from "react"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-
-import { AlertTriangle, AlertCircle } from 'lucide-react'
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { RefreshCcw, AlertCircle } from 'lucide-react'
+import { DataTable } from "@/components/data-table"
+import { exceptionColumns } from "@/components/exception-columns"
+import { ExceptionDialog } from "@/components/exception-dialog"
 import { useExceptions } from "@/hooks/use-exceptions"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
+import type { ExceptionWithRelations } from "@/types/api"
 
+
+type StatusFilter = "all" | "resolved" | "unresolved"
+type DateFilter = "all" | "7days" | "30days"
 
 export default function ExceptionsPage() {
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = React.useState("")
+  const [status, setStatus] = React.useState<StatusFilter>("all")
+  const [dateFilter, setDateFilter] = React.useState<DateFilter>("all")
+  const [dialogException, setDialogException] = React.useState<ExceptionWithRelations | null>(null)
+
   const { data: exceptions, isLoading, error } = useExceptions()
 
-
-
-
-
-    const filtered = useMemo(() => {
+  const filtered = React.useMemo(() => {
     if (!exceptions) return []
-    if (!query.trim()) return exceptions
+    
+    let result = exceptions
+    
+    // Search filter
+    if (query.trim()) {
+      const q = query.toLowerCase()
+      result = result.filter((e) => {
+        return (
+          e.exceptionlogid.toString().toLowerCase().includes(q) ||
+          e.BookingExceptionStatus?.exception_shortdesc?.toLowerCase().includes(q) ||
+          e.BookingExceptionStatus?.exception_longdesc?.toLowerCase().includes(q) ||
+          e.Booking?.Client?.companyname?.toLowerCase().includes(q)
+        )
+      })
+    }
+    
+    // Status filter
+    if (status !== "all") {
+      result = result.filter((e) => e.resolved === (status === "resolved"))
+    }
+    
+    // Date filter
+    if (dateFilter !== "all") {
+      const now = new Date()
+      const daysAgo = dateFilter === "7days" ? 7 : 30
+      const cutoffDate = new Date(now.getTime() - (daysAgo * 24 * 60 * 60 * 1000))
+      
+      result = result.filter((e) => {
+        const createdDate = new Date(e.created_at)
+        return createdDate >= cutoffDate
+      })
+    }
+    
+    return result
+  }, [exceptions, query, status, dateFilter])
 
-    const q = query.toLowerCase()
-    return exceptions.filter((e) => {
-      return (
-        e.exceptionlogid.toString().toLowerCase().includes(q) ||
-        e.BookingExceptionStatus?.exception_shortdesc?.toLowerCase().includes(q) ||
-        e.BookingExceptionStatus?.exception_longdesc?.toLowerCase().includes(q) ||
-        e.Booking?.Client?.companyname?.toLowerCase().includes(q)
-      )
-    })
-  }, [exceptions, query])
+  const resetFilters = () => {
+    setQuery("")
+    setStatus("all")
+    setDateFilter("all")
+  }
+
+  const columns = React.useMemo(() => exceptionColumns((e) => setDialogException(e)), [])
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className="text-sm font-medium mb-1 block">Search Exceptions</label>
-            <Skeleton className="h-10 w-full" />
-          </div>
+      <div className="space-y-4">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-10 w-[250px]" />
+          <Skeleton className="h-10 w-[160px]" />
+          <Skeleton className="h-10 w-[180px]" />
         </div>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-24 w-full" />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full" />
+          ))}
+        </div>
       </div>
     )
   }
@@ -70,117 +99,58 @@ export default function ExceptionsPage() {
     )
   }
 
-                return (
-                <div className="space-y-6">
-                  <div className="grid gap-3 sm:grid-cols-1">
-                    <div className="">
-                      <label className="text-sm font-medium mb-1 block">Search Exceptions</label>
-                      <Input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search by error, message, booking, or client"
-                      />
-                    </div>
-                  </div>
-
-      <Card>
-        <CardHeader className="flex-row items-center justify-between">
-          <CardTitle>Exception Log</CardTitle>
-          <Badge variant="secondary">{filtered.length} issues</Badge>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-                                    {filtered.map((e) => {
-                          const booking = e.Booking
-                          const client = booking?.Client
-                          return (
-                            <Card key={e.exceptionlogid} className="border-l-4 border-l-orange-500">
-                              <CardContent className="p-6">
-                                <div className="flex items-start justify-between mb-4">
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-2">
-                                      <AlertTriangle className="h-5 w-5 text-orange-600" />
-                                      <h3 className="font-semibold text-lg">
-                                        {e.BookingExceptionStatus?.exception_shortdesc || 'Unknown Error'}
-                                      </h3>
-                                    </div>
-                                    <Badge variant="secondary" className="text-xs">
-                                      ID: {e.exceptionlogid}
-                                    </Badge>
-                                    <Badge variant={e.resolved ? "default" : "destructive"} className="text-xs">
-                                      {e.resolved ? 'Resolved' : 'Unresolved'}
-                                    </Badge>
-                                  </div>
-                                  <span className="text-xs text-muted-foreground">
-                                    {new Date(e.created_at).toLocaleString()}
-                                  </span>
-                                </div>
-                                
-                                <div className="mb-4">
-                                  <p className="text-sm text-muted-foreground mb-3">
-                                    {e.BookingExceptionStatus?.exception_longdesc || 'No description available'}
-                                  </p>
-                                </div>
-
-                                {booking ? (
-                                  <div className="bg-muted/50 rounded-lg p-4">
-                                    <h4 className="font-medium text-sm mb-3 text-muted-foreground">Booking Information</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">Client</span>
-                                        <span className="font-medium">{client?.companyname || '—'}</span>
-                                      </div>
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">Booking ID</span>
-                                        <span className="font-medium">{booking.bookingid || '—'}</span>
-                                      </div>
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">Contact</span>
-                                        <span className="font-medium">{booking.primary_contact || '—'}</span>
-                                      </div>
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">Email</span>
-                                        <span className="font-medium">{booking.primary_email || '—'}</span>
-                                      </div>
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">Start Date</span>
-                                        <span className="font-medium">
-                                          {booking.cover_startdate ? new Date(booking.cover_startdate).toLocaleDateString() : '—'}
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">End Date</span>
-                                        <span className="font-medium">
-                                          {booking.cover_enddate ? new Date(booking.cover_enddate).toLocaleDateString() : '—'}
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">Booking Status</span>
-                                        <span className="font-medium">{booking.BookingStatus?.bookingstatus_shortdesc || '—'}</span>
-                                      </div>
-                                      <div>
-                                        <span className="text-muted-foreground block text-xs">Created</span>
-                                        <span className="font-medium">
-                                          {booking.created_at ? new Date(booking.created_at).toLocaleDateString() : '—'}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="bg-muted/50 rounded-lg p-4">
-                                    <div className="text-sm text-muted-foreground">
-                                      <AlertCircle className="h-4 w-4 inline mr-2" />
-                                      No booking associated with this exception.
-                                    </div>
-                                  </div>
-                                )}
-                              </CardContent>
-                            </Card>
-                          )
-                        })}
-          </div>
-        </CardContent>
-      </Card>
+  const toolbar = (
+    <div className="flex w-full flex-col gap-2 md:flex-row md:items-center">
+      <div className="md:w-[260px]">
+        <Input
+          placeholder="Search exceptions..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+      <Select
+        value={status}
+        onValueChange={(v) => setStatus(v as StatusFilter)}
+      >
+        <SelectTrigger className="md:w-[160px]">
+          <SelectValue placeholder="Status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All status</SelectItem>
+          <SelectItem value="unresolved">Unresolved</SelectItem>
+          <SelectItem value="resolved">Resolved</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select
+        value={dateFilter}
+        onValueChange={(v) => setDateFilter(v as DateFilter)}
+      >
+        <SelectTrigger className="md:w-[180px]">
+          <SelectValue placeholder="Date range" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All time</SelectItem>
+          <SelectItem value="7days">Last 7 days</SelectItem>
+          <SelectItem value="30days">Last 30 days</SelectItem>
+        </SelectContent>
+      </Select>
+      <Button variant="outline" className="md:ml-auto" onClick={resetFilters}>
+        <RefreshCcw className="mr-2 h-4 w-4" />
+        Reset
+      </Button>
     </div>
+  )
+
+  return (
+    <>
+      <DataTable columns={columns} data={filtered} toolbar={toolbar} initialPageSize={10} />
+      <ExceptionDialog
+        exception={dialogException ?? undefined}
+        open={!!dialogException}
+        onOpenChange={(o) => {
+          if (!o) setDialogException(null)
+        }}
+      />
+    </>
   )
 }
