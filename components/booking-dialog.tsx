@@ -34,7 +34,9 @@ export function BookingDialog({
       <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Bookings for {client?.companyname}</DialogTitle>
-          <DialogDescription>Client ID: {client?.clientid}</DialogDescription>
+          <DialogDescription>
+            Client ID: <Badge variant="outline" className="font-mono text-xs">#{client?.clientid}</Badge>
+          </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
           {isLoading ? (
@@ -51,7 +53,11 @@ export function BookingDialog({
                 <div key={b.bookingid} className="rounded-lg border p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <span className="font-semibold text-lg">Booking #{b.bookingid}</span>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="font-mono text-xs">
+                          #{b.bookingid}
+                        </Badge>
+                      </div>
                       <Badge variant={
                         b.BookingStatus?.bookingstatus_shortdesc?.toLowerCase() === "confirmed" ? "default" : 
                         b.BookingStatus?.bookingstatus_shortdesc?.toLowerCase() === "pending" ? "secondary" : 

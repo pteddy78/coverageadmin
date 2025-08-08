@@ -20,9 +20,9 @@ export function BookingDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Booking Details #{booking?.bookingid}</DialogTitle>
+          <DialogTitle>Booking Details <Badge variant="outline" className="font-mono text-xs">#{booking?.bookingid}</Badge></DialogTitle>
           <DialogDescription>
-            {booking?.Client?.companyname} • {booking?.primary_contact}
+            {booking?.Client?.companyname} • {booking?.primary_contact} • <Badge variant="outline" className="font-mono text-xs">#{booking?.clientid}</Badge>
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto space-y-6 pr-2">

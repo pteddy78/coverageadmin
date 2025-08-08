@@ -14,14 +14,12 @@ import { BookingDetailsDialog } from "@/components/booking-details-dialog"
 import type { BookingWithRelations } from "@/types/api"
 import { testSupabaseConnection } from "@/lib/database"
 
-type StatusFilter = "all" | "confirmed" | "pending" | "cancelled"
-type CoverageFilter = "all" | "phone" | "onsite" | "both"
+type StatusFilter = "all" | "confirmed" | "unconfirmed" | "canceled"
 type PeriodFilter = "all" | "christmas" | "newyear"
 
 export default function BookingsPage() {
   const [query, setQuery] = React.useState("")
   const [status, setStatus] = React.useState<StatusFilter>("all")
-  const [coverage, setCoverage] = React.useState<CoverageFilter>("all")
   const [period, setPeriod] = React.useState<PeriodFilter>("all")
   const [selectedBooking, setSelectedBooking] = React.useState<BookingWithRelations | null>(null)
 
@@ -50,25 +48,17 @@ export default function BookingsPage() {
         b.BookingStatus?.bookingstatus_shortdesc?.toLowerCase() === status
       )
     }
-    if (coverage !== "all") {
-      result = result.filter((b) => {
-        const cov = b.CoverageConfig?.coverage_name?.toLowerCase() || ""
-        if (coverage === "both") return cov.includes("phone") && cov.includes("onsite")
-        return cov.includes(coverage)
-      })
-    }
     if (period !== "all") {
       // Filter by date range - this would need to be implemented based on your data structure
       // For now, we'll show all bookings
       result = result
     }
     return result
-  }, [bookings, query, status, coverage, period])
+  }, [bookings, query, status, period])
 
   const resetFilters = () => {
     setQuery("")
     setStatus("all")
-    setCoverage("all")
     setPeriod("all")
   }
 
@@ -122,22 +112,8 @@ export default function BookingsPage() {
         <SelectContent>
           <SelectItem value="all">All status</SelectItem>
           <SelectItem value="confirmed">Confirmed</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="cancelled">Cancelled</SelectItem>
-        </SelectContent>
-      </Select>
-      <Select
-        value={coverage}
-        onValueChange={(v) => setCoverage(v as CoverageFilter)}
-      >
-        <SelectTrigger className="md:w-[180px]">
-          <SelectValue placeholder="Coverage" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All coverage</SelectItem>
-          <SelectItem value="phone">Phone</SelectItem>
-          <SelectItem value="onsite">Onsite</SelectItem>
-          <SelectItem value="both">Phone + Onsite</SelectItem>
+          <SelectItem value="unconfirmed">Unconfirmed</SelectItem>
+          <SelectItem value="canceled">Canceled</SelectItem>
         </SelectContent>
       </Select>
       <Select
