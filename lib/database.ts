@@ -173,34 +173,49 @@ export async function getBookingsByClientId(clientId: number): Promise<BookingWi
 export async function getExceptions(): Promise<ExceptionWithRelations[]> {
   console.log('Fetching exceptions...')
   
-  const { data, error } = await supabase
-    .from('BookingExceptionLog')
-    .select(`
-      *,
-      Booking (
-        bookingid,
-        clientid,
-        cover_startdate,
-        cover_enddate,
-        primary_contact,
-        Client (
-          companyname
+  try {
+    // Use regular joins to include ALL exceptions, even those without booking relationships
+    const { data, error } = await supabase
+      .from('BookingExceptionLog')
+      .select(`
+        *,
+        Booking (
+          bookingid,
+          clientid,
+          cover_startdate,
+          cover_enddate,
+          primary_contact,
+          primary_email,
+          created_at,
+          Client (
+            clientid,
+            companyname
+          ),
+          BookingStatus (
+            bookingstatusid,
+            bookingstatus_shortdesc
+          )
+        ),
+        BookingExceptionStatus (
+          bookingexceptionstatusid,
+          exception_shortdesc,
+          exception_longdesc
         )
-      ),
-      BookingExceptionStatus (
-        exception_shortdesc,
-        exception_longdesc
-      )
-    `)
-    .order('created_at', { ascending: false })
+      `)
+      .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching exceptions:', error)
-    throw error
+    if (error) {
+      console.error('Supabase error fetching exceptions:', error)
+      throw new Error(`Database error: ${error.message}`)
+    }
+    
+    console.log('Total exceptions found:', data?.length || 0)
+    console.log('Sample exception data:', data?.[0])
+    return data || []
+  } catch (err) {
+    console.error('Exception in getExceptions:', err)
+    throw new Error(`Failed to fetch exceptions: ${err instanceof Error ? err.message : 'Unknown error'}`)
   }
-  
-  console.log('Total exceptions found:', data?.length || 0)
-  return data || []
 }
 
 // Configuration queries
@@ -372,5 +387,234 @@ export async function testSupabaseConnection() {
   } catch (err) {
     console.error('Supabase connection test failed:', err)
     throw err
+  }
+}
+
+// Test BookingExceptionLog table access
+export async function testBookingExceptionLog() {
+  try {
+    console.log('Testing BookingExceptionLog table access...')
+    const { data, error } = await supabase
+      .from('BookingExceptionLog')
+      .select('exceptionlogid')
+      .limit(5)
+
+    if (error) {
+      console.error('BookingExceptionLog table access failed:', error)
+      throw error
+    }
+
+    console.log('BookingExceptionLog table access successful!')
+    console.log('Sample exception IDs:', data)
+    return data
+  } catch (err) {
+    console.error('BookingExceptionLog table access failed:', err)
+    throw err
+  }
+}
+
+// Test simple exceptions query without inner joins
+export async function testSimpleExceptions() {
+  try {
+    console.log('=== Testing simple exceptions query without inner joins ===')
+    const { data, error } = await supabase
+      .from('BookingExceptionLog')
+      .select(`
+        *,
+        Booking (
+          bookingid,
+          clientid,
+          cover_startdate,
+          cover_enddate,
+          primary_contact,
+          primary_email,
+          created_at,
+          Client (
+            clientid,
+            companyname
+          ),
+          BookingStatus (
+            bookingstatusid,
+            bookingstatus_shortdesc
+          )
+        ),
+        BookingExceptionStatus (
+          bookingexceptionstatusid,
+          exception_shortdesc,
+          exception_longdesc
+        )
+      `)
+      .limit(5)
+
+    if (error) {
+      console.error('=== Simple exceptions query failed:', error, '===')
+      throw error
+    }
+
+    console.log('=== Simple exceptions query successful! ===')
+    console.log('=== Total exceptions found:', data?.length || 0, '===')
+    console.log('=== Sample exception data:', data?.[0], '===')
+    return data
+  } catch (err) {
+    console.error('=== Simple exceptions query failed:', err, '===')
+    throw err
+  }
+}
+
+// Test to check if there are ANY records in BookingExceptionLog at all
+export async function testRawBookingExceptionLog() {
+  try {
+    console.log('=== Testing raw BookingExceptionLog table (no joins) ===')
+    const { data, error } = await supabase
+      .from('BookingExceptionLog')
+      .select('*')
+      .limit(10)
+
+    if (error) {
+      console.error('=== Raw BookingExceptionLog query failed:', error, '===')
+      throw error
+    }
+
+    console.log('=== Raw BookingExceptionLog query successful! ===')
+    console.log('=== Total raw exceptions found:', data?.length || 0, '===')
+    if (data && data.length > 0) {
+      console.log('=== First raw exception:', data[0], '===')
+    } else {
+      console.log('=== NO EXCEPTIONS FOUND IN DATABASE ===')
+    }
+    return data
+  } catch (err) {
+    console.error('=== Raw BookingExceptionLog query failed:', err, '===')
+    throw err
+  }
+}
+
+// Test to check if the table exists and we have permissions
+export async function testTableAccess() {
+  try {
+    console.log('=== Testing table access and permissions ===')
+    
+    // Test 1: Try to get table info
+    const { data: tableInfo, error: tableError } = await supabase
+      .from('BookingExceptionLog')
+      .select('exceptionlogid')
+      .limit(1)
+    
+    if (tableError) {
+      console.error('=== Table access error:', tableError, '===')
+      return { success: false, error: tableError }
+    }
+    
+    console.log('=== Table access successful ===')
+    
+    // Test 2: Try to count records
+    const { count, error: countError } = await supabase
+      .from('BookingExceptionLog')
+      .select('*', { count: 'exact', head: true })
+    
+    if (countError) {
+      console.error('=== Count error:', countError, '===')
+      return { success: false, error: countError }
+    }
+    
+    console.log('=== Total records in table:', count, '===')
+    return { success: true, count }
+    
+  } catch (err) {
+    console.error('=== Table access test failed:', err, '===')
+    return { success: false, error: err }
+  }
+}
+
+// Add sample exception data for testing
+export async function addSampleExceptions() {
+  try {
+    console.log('=== Adding sample exception data ===')
+    
+    // First, let's get a valid booking ID and exception status ID
+    const { data: bookings } = await supabase
+      .from('Booking')
+      .select('bookingid')
+      .limit(1)
+    
+    const { data: exceptionStatuses } = await supabase
+      .from('BookingExceptionStatus')
+      .select('bookingexceptionstatusid')
+      .limit(1)
+    
+    if (!bookings?.length || !exceptionStatuses?.length) {
+      console.log('=== No bookings or exception statuses found to create sample data ===')
+      return
+    }
+    
+    const sampleExceptions = [
+      {
+        bookingid: bookings[0].bookingid,
+        bookingexceptionstatusid: exceptionStatuses[0].bookingexceptionstatusid,
+        resolved: false
+      },
+      {
+        bookingid: null, // Test exception without booking
+        bookingexceptionstatusid: exceptionStatuses[0].bookingexceptionstatusid,
+        resolved: false
+      }
+    ]
+    
+    const { data, error } = await supabase
+      .from('BookingExceptionLog')
+      .insert(sampleExceptions)
+      .select()
+    
+    if (error) {
+      console.error('=== Error adding sample exceptions:', error, '===')
+      return
+    }
+    
+    console.log('=== Sample exceptions added successfully:', data?.length || 0, '===')
+    return data
+    
+  } catch (err) {
+    console.error('=== Error adding sample exceptions:', err, '===')
+  }
+}
+
+// Test permissions across different tables
+export async function testTablePermissions() {
+  try {
+    console.log('=== Testing permissions across tables ===')
+    
+    const tables = ['Client', 'Booking', 'BookingStatus', 'BookingExceptionStatus', 'BookingExceptionLog']
+    
+    for (const table of tables) {
+      console.log(`=== Testing ${table} table ===`)
+      
+      // Test 1: Try to select
+      const { data: selectData, error: selectError } = await supabase
+        .from(table)
+        .select('*')
+        .limit(1)
+      
+      if (selectError) {
+        console.error(`=== ${table} SELECT error:`, selectError, '===')
+      } else {
+        console.log(`=== ${table} SELECT successful, found:`, selectData?.length || 0, 'records ===')
+      }
+      
+      // Test 2: Try to count
+      const { count, error: countError } = await supabase
+        .from(table)
+        .select('*', { count: 'exact', head: true })
+      
+      if (countError) {
+        console.error(`=== ${table} COUNT error:`, countError, '===')
+      } else {
+        console.log(`=== ${table} COUNT successful, total records:`, count, '===')
+      }
+      
+      console.log('---')
+    }
+    
+  } catch (err) {
+    console.error('=== Table permissions test failed:', err, '===')
   }
 }

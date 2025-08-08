@@ -28,12 +28,19 @@ export type ExceptionWithRelations = BookingException & {
   Booking: {
     bookingid: number
     clientid: number
-    Client: Pick<Client, 'companyname'>
-  }
+    cover_startdate: string | null
+    cover_enddate: string | null
+    primary_contact: string | null
+    primary_email: string | null
+    created_at: string
+    Client: Pick<Client, 'clientid' | 'companyname'>
+    BookingStatus: Pick<BookingStatus, 'bookingstatusid' | 'bookingstatus_shortdesc'>
+  } | null
   BookingExceptionStatus: {
-    exception_shortdesc: string
-    exception_longdesc: string
-  }
+    bookingexceptionstatusid: number
+    exception_shortdesc: string | null
+    exception_longdesc: string | null
+  } | null
 }
 
 // Request Types
