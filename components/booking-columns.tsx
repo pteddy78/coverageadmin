@@ -9,7 +9,7 @@ import type { BookingWithRelations } from "@/types/api"
 export function bookingColumns(onViewDetails?: (booking: BookingWithRelations) => void): ColumnDef<BookingWithRelations>[] {
   return [
     {
-      id: "bookingid",
+      accessorKey: "bookingid",
       header: "Booking ID",
       cell: ({ row }) => {
         const b = row.original
@@ -24,7 +24,7 @@ export function bookingColumns(onViewDetails?: (booking: BookingWithRelations) =
       enableSorting: true,
     },
     {
-      id: "client",
+      accessorKey: "Client.companyname",
       header: "Client",
       cell: ({ row }) => {
         const b = row.original
@@ -39,10 +39,10 @@ export function bookingColumns(onViewDetails?: (booking: BookingWithRelations) =
           </div>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
     },
     {
-      id: "schedule",
+      accessorKey: "cover_startdate",
       header: "Schedule",
       cell: ({ row }) => {
         const b = row.original
@@ -81,10 +81,10 @@ export function bookingColumns(onViewDetails?: (booking: BookingWithRelations) =
           <span className="text-muted-foreground">—</span>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
     },
     {
-      id: "status",
+      accessorKey: "BookingStatus.bookingstatus_shortdesc",
       header: "Status",
       cell: ({ row }) => {
         const status = row.original.BookingStatus?.bookingstatus_shortdesc ?? ''

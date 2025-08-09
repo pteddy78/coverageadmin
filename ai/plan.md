@@ -333,3 +333,205 @@ Error: ENOENT: no such file or directory, lstat '/vercel/path0/.next/server/app/
 - ✅ Visual indicators and status badges
 - ✅ Proper loading states and error handling
 - ✅ Consistent ID pill design across all views (Exception ID, Client ID, Booking ID)
+
+## 6. Phase 11: New Client Exception Implementation
+
+**Objective:** Implement a new exception type for handling scenarios where a client is not found during booking search and save operations. This will help track and manage new client registrations that require special attention.
+
+**Requirements:**
+- Create new exception type with ID "New Client"
+- Trigger when client is not found during booking search/save
+- Set booking status to "unconfirmed" with status ID 8 (New_Client)
+- Integrate with existing exception log system
+- Provide clear tracking of new client registrations
+
+**Implementation Plan:**
+
+#### Task 1: Database Schema Updates
+1. **Add New Exception Status:**
+   - ✅ Set `bookingexceptionstatusid` to appropriate value
+   - ✅ Set `exception_shortdesc` to "New_Client"
+   - ✅ Set `exception_longdesc` to "Client not found during booking search and save operation"
+   - ✅ Ensure proper foreign key relationships
+
+2. **Update Booking Status Table:**
+   - ✅ Verify status ID 8 exists in `BookingStatus` table
+   - ✅ Ensure `bookingstatus_shortdesc` is "New_Client"
+   - ✅ Add appropriate `bookingstatus_longdesc` if needed
+
+#### Task 2: Backend Logic Implementation
+1. **Create Exception Detection Logic:**
+   - Implement function to detect when client is not found
+   - Add logic in booking save process to check client existence
+   - Create exception creation function for new client scenarios
+   - Integrate with existing exception logging system
+
+2. **Update API Endpoints:**
+   - Modify booking creation endpoint to handle new client exceptions
+   - Add exception logging to booking save process
+   - Ensure proper error handling and response codes
+   - Update API documentation for new exception type
+
+#### Task 3: Frontend Integration
+1. **Update Exception Display Components:**
+   - Modify `components/exception-columns.tsx` to handle new exception type
+   - Update exception dialog to display new client information
+   - Add appropriate styling and icons for new client exceptions
+   - Ensure proper filtering and search functionality
+
+2. **Enhance Booking Dialog:**
+   - Update `components/booking-dialog.tsx` to show new client exceptions
+   - Add visual indicators for new client bookings
+   - Include appropriate messaging and actions
+   - Maintain consistency with existing exception display
+
+#### Task 4: Exception Management Features
+1. **Add New Client Workflow:**
+   - Create process for handling new client exceptions
+   - Add ability to convert new client exception to confirmed booking
+   - Implement client creation from exception data
+   - Add bulk actions for new client exceptions
+
+2. **Reporting and Analytics:**
+   ❌ Add new client exception metrics to dashboard
+   ❌ Create reports for new client registrations
+   ❌ Track conversion rates from new client to confirmed booking
+   ❌ Add export functionality for new client data
+
+#### Task 5: Testing and Validation
+1. **Create Test Scenarios:**
+   - Test booking creation with non-existent client
+   - Verify exception is properly created and logged
+   - Test exception display in all relevant components
+   - Validate booking status updates correctly
+
+2. **Integration Testing:**
+   - Test with existing exception log functionality
+   - Verify data consistency across all views
+   - Test filtering and search with new exception type
+   - Validate API responses and error handling
+
+#### Task 6: Documentation and Training
+1. **Update System Documentation:**
+   - Document new exception type and its purpose
+   - Update API documentation with new endpoints
+   - Create user guide for handling new client exceptions
+   - Add troubleshooting guide for common issues
+
+2. **User Training Materials:**
+   - Create training materials for admin users
+   - Document workflow for handling new client exceptions
+   - Provide examples and best practices
+   - Add FAQ section for common questions
+
+**Files to be Modified:**
+- Database schema (BookingExceptionStatus, BookingStatus tables)
+- `lib/database.ts` - Add new client detection logic
+- `app/api/bookings/route.ts` - Update booking creation endpoint
+- `components/exception-columns.tsx` - Add new exception type handling
+- `components/booking-dialog.tsx` - Update exception display
+- `types/api.ts` - Add new exception type definitions
+- `hooks/use-bookings.ts` - Update booking creation logic
+- `app/(dashboard)/exceptions/page.tsx` - Add new client filtering
+
+**Expected Outcome:**
+- New exception type "New Client" properly integrated into system
+- Automatic exception creation when client not found during booking
+- Booking status correctly set to "unconfirmed" with status ID 8
+- Clear tracking and management of new client registrations
+- Seamless integration with existing exception log functionality
+- Proper filtering and search capabilities for new client exceptions
+- User-friendly interface for handling new client scenarios
+- Comprehensive reporting and analytics for new client data
+- Robust error handling and validation throughout the system
+
+## 7. Phase 12: Booking Grid Sorting Enhancement
+
+**Objective:** Ensure the Bookings grid has complete sorting functionality matching the Clients and Exceptions grids for consistent user experience.
+
+**Requirements:**
+- Enable sorting on all relevant columns in the Bookings DataTable
+- Maintain consistency with sorting behavior in Clients and Exceptions grids
+- Provide visual sorting indicators (arrows) in column headers
+- Support both ascending and descending sort orders
+
+**Implementation Plan:**
+
+#### ✅ Task 1: Enable Client Column Sorting (COMPLETED)
+1. ✅ **Update `components/booking-columns.tsx`:**
+   - ✅ Change Client column from `id: "client"` to `accessorKey: "Client.companyname"`
+   - ✅ Enable sorting with `enableSorting: true`
+   - ✅ Allow sorting by company name for better data organization
+
+#### ✅ Task 2: Enable Contact Column Sorting (COMPLETED)
+1. ✅ **Update Contact Column Configuration:**
+   - ✅ Set `enableSorting: true` for primary_contact field
+   - ✅ Enable alphabetical sorting by contact name
+   - ✅ Maintain existing cell rendering and styling
+
+#### ✅ Task 3: Verify Complete Sorting Configuration (COMPLETED)
+1. ✅ **Confirmed All Columns:**
+   - ✅ Booking ID: Sortable by booking ID number
+   - ✅ Client: Sortable by company name (newly enabled)
+   - ✅ Schedule: Sortable by cover start date
+   - ✅ Contact: Sortable by primary contact name (newly enabled)
+   - ✅ Status: Sortable by booking status
+   - ✅ 2025 Units: Sortable by unit count
+   - ✅ Actions: Non-sortable (correct behavior)
+
+#### ✅ Task 5: Fix Accessor Key Issues (COMPLETED)
+1. ✅ **Fixed Column Sorting Implementation:**
+   - ✅ Changed Booking ID from `id: "bookingid"` to `accessorKey: "bookingid"`
+   - ✅ Changed Schedule from `id: "schedule"` to `accessorKey: "cover_startdate"`
+   - ✅ Changed Status from `id: "status"` to `accessorKey: "BookingStatus.bookingstatus_shortdesc"`
+   - ✅ Verified all columns now have proper accessor keys for reliable sorting
+
+#### ✅ Task 4: Update Documentation (COMPLETED)
+1. ✅ **Document Changes in Plan:**
+   - ✅ Record completed sorting enhancements
+   - ✅ List all sortable columns for reference
+   - ✅ Confirm consistency across all grid views
+
+**Files Modified:**
+- ✅ `components/booking-columns.tsx` - Updated Client and Contact column sorting
+
+**✅ Expected Outcome (IMPLEMENTED):**
+- ✅ Complete sorting functionality across all relevant Booking grid columns
+- ✅ Consistent sorting behavior matching Clients and Exceptions grids  
+- ✅ Visual sorting indicators (↑/↓) in all sortable column headers
+- ✅ Improved user experience with comprehensive data organization options
+- ✅ Maintained existing cell rendering and styling throughout all columns
+
+**Technical Details:**
+- ✅ Booking ID column now sorts by `bookingid` field (fixed from id to accessorKey)
+- ✅ Client column sorts by `Client.companyname` using nested accessor key
+- ✅ Schedule column sorts by `cover_startdate` field (fixed from id to accessorKey)
+- ✅ Contact column sorts by `primary_contact` field for alphabetical organization
+- ✅ Status column sorts by `BookingStatus.bookingstatus_shortdesc` (fixed from id to accessorKey)
+- ✅ 2025 Units column sorts by `unitcount2025` field
+- ✅ All sorting supports both ascending (↑) and descending (↓) sort orders
+- ✅ All sorting utilizes existing DataTable component's TanStack Table sorting infrastructure
+- ✅ Sorting state managed automatically with visual indicators and proper accessibility labels
+
+#### ✅ Task 6: Implement Default Descending Sorting (COMPLETED)
+1. ✅ **Enhanced DataTable Component:**
+   - ✅ Added `initialSorting` prop to DataTable component
+   - ✅ Allows setting initial sort state when component mounts
+   - ✅ Maintains existing sorting functionality and user control
+
+2. ✅ **Configured Bookings Grid Default Sorting:**
+   - ✅ Set initial sorting to `bookingid` column in descending order
+   - ✅ Newest bookings (highest ID) now appear first by default
+   - ✅ Users can still click column headers to change sort order
+   - ✅ Maintains all existing sorting capabilities
+
+**Files Modified:**
+- ✅ `components/data-table.tsx` - Added initialSorting prop support
+- ✅ `app/(dashboard)/bookings/page.tsx` - Configured default descending sort
+
+**✅ Expected Outcome (IMPLEMENTED):**
+- ✅ Bookings grid automatically shows newest records first on page load
+- ✅ Improved user experience with most recent data immediately visible
+- ✅ Maintains full sorting flexibility for all columns
+- ✅ Consistent with modern data grid UX patterns
+- ✅ No impact on existing sorting functionality or performance

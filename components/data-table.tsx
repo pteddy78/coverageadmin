@@ -28,6 +28,7 @@ type DataTableProps<TData, TValue> = {
   data: TData[]
   toolbar?: React.ReactNode
   initialPageSize?: number
+  initialSorting?: SortingState
   className?: string
 }
 
@@ -36,9 +37,10 @@ export function DataTable<TData, TValue>({
   data,
   toolbar,
   initialPageSize = 10,
+  initialSorting = [],
   className,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>(initialSorting)
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: initialPageSize,

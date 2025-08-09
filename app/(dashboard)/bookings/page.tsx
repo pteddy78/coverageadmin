@@ -138,7 +138,13 @@ export default function BookingsPage() {
 
   return (
     <>
-      <DataTable columns={columns} data={filtered} toolbar={toolbar} initialPageSize={10} />
+      <DataTable 
+        columns={columns} 
+        data={filtered} 
+        toolbar={toolbar} 
+        initialPageSize={10}
+        initialSorting={[{ id: "bookingid", desc: true }]}
+      />
       <BookingDetailsDialog
         booking={selectedBooking ?? undefined}
         open={!!selectedBooking}
